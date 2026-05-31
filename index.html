@@ -2,19 +2,45 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>NiceDO - Space MMO</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
+        
+        <!-- Mobile Controls -->
+        <div id="mobile-controls">
+            <!-- Left Joystick -->
+            <div id="joystick-container">
+                <div id="joystick-bg">
+                    <div id="joystick-stick"></div>
+                </div>
+            </div>
+            
+            <!-- Right Shoot Button -->
+            <button id="shoot-button">FIRE</button>
+            
+            <!-- Mobile Stats Panel -->
+            <div id="mobile-stats">
+                <div id="hp-display">HP: <span id="hp">100</span></div>
+                <div id="shield-display">Shield: <span id="shield">50</span></div>
+                <div id="score-display">Score: <span id="score">0</span></div>
+                <div id="wave-display">Wave: <span id="wave">1</span></div>
+            </div>
+        </div>
+        
+        <!-- Desktop UI Panel (hidden on mobile) -->
         <div id="ui-panel">
             <div id="player-stats">
                 <h3>Spieler-Info</h3>
-                <p>HP: <span id="hp">100</span>/<span id="max-hp">100</span></p>
-                <p>Schild: <span id="shield">50</span>/<span id="max-shield">50</span></p>
+                <p>HP: <span id="hp-desktop">100</span>/<span id="max-hp">100</span></p>
+                <p>Schild: <span id="shield-desktop">50</span>/<span id="max-shield">50</span></p>
                 <p>Credits: <span id="credits">0</span></p>
+                <p>Wave: <span id="wave-desktop">1</span></p>
             </div>
             <div id="minimap">
                 <canvas id="minimapCanvas"></canvas>
@@ -22,6 +48,7 @@
         </div>
     </div>
     
+    <script src="js/touch-input.js"></script>
     <script src="js/game.js"></script>
     <script src="js/player.js"></script>
     <script src="js/enemy.js"></script>

@@ -3,7 +3,9 @@ class Game {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.minimapCanvas = document.getElementById('minimapCanvas');
-        this.minimapCtx = this.minimapCanvas.getContext('2d');
+        this.minimapCtx = this.minimapCanvas ? this.minimapCanvas.getContext('2d') : null;
+        
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
@@ -20,14 +22,24 @@ class Game {
         this.wave = 1;
         this.enemySpawnTimer = 0;
         
+        this.lastTouchX = 0;
+        this.lastTouchY = 0;
+        
         this.gameLoop();
     }
     
     resizeCanvas() {
-        this.canvas.width = window.innerWidth - 250;
-        this.canvas.height = window.innerHeight;
-        this.minimapCanvas.width = 230;
-        this.minimapCanvas.height = 150;
+        if (this.isMobile) {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+        } else {
+            this.canvas.width = window.innerWidth - 250;
+            this.canvas.height = window.innerHeight;
+            if (this.minimapCanvas) {
+                this.minimapCanvas.width = 230;
+                this.minimapCanvas.height = 150;
+            }
+        }
     }
     
     setupInputHandlers() {
@@ -39,13 +51,26 @@ class Game {
             this.keys[e.key] = false;
         });
         
-        document.addEventListener('mousemove', (e) => {
-            this.player.setTarget(e.clientX, e.clientY);
-        });
-        
-        document.addEventListener('click', () => {
-            this.player.shoot();
-        });
+        // Desktop mouse aiming
+        if (!this.isMobile) {
+            document.addEventListener('mousemove', (e) => {
+                this.player.setTarget(e.clientX, e.clientY);
+            });
+            
+            document.addEventListener('click', () => {
+                this.player.shoot();
+            });
+        } else {
+            // Mobile touch aiming (but not on controls)
+            document.addEventListener('touchmove', (e) => {
+                if (e.target === this.canvas) {
+                    const touch = e.touches[0];
+                    this.lastTouchX = touch.clientX;
+                    this.lastTouchY = touch.clientY;
+                    this.player.setTarget(touch.clientX, touch.clientY);
+                }
+            });
+        }
     }
     
     spawnEnemy() {
@@ -107,7 +132,15 @@ class Game {
         // Wave Management
         if (this.enemies.length === 0 && this.enemySpawnTimer === 0) {
             this.wave++;
+            this.updateWaveDisplay();
         }
+    }
+    
+    updateWaveDisplay() {
+        const waveElement = document.getElementById('wave');
+        const waveDesktopElement = document.getElementById('wave-desktop');
+        if (waveElement) waveElement.textContent = this.wave;
+        if (waveDesktopElement) waveDesktopElement.textContent = this.wave;
     }
     
     checkCollisions() {
@@ -152,7 +185,7 @@ class Game {
         this.ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw stars (optional background)
+        // Draw stars
         this.drawStars();
         
         // Draw game objects
@@ -165,8 +198,10 @@ class Game {
         // Draw HUD
         this.drawHUD();
         
-        // Draw minimap
-        this.drawMinimap();
+        // Draw minimap only on desktop
+        if (!this.isMobile && this.minimapCtx) {
+            this.drawMinimap();
+        }
     }
     
     drawStars() {
@@ -183,12 +218,18 @@ class Game {
     drawHUD() {
         this.ctx.fillStyle = '#00ff88';
         this.ctx.font = 'bold 16px Arial';
-        this.ctx.fillText(`Wave: ${this.wave}`, 20, 30);
-        this.ctx.fillText(`Score: ${this.score}`, 20, 60);
-        this.ctx.fillText(`Enemies: ${this.enemies.length}`, 20, 90);
+        
+        // Desktop HUD
+        if (!this.isMobile) {
+            this.ctx.fillText(`Wave: ${this.wave}`, 20, 30);
+            this.ctx.fillText(`Score: ${this.score}`, 20, 60);
+            this.ctx.fillText(`Enemies: ${this.enemies.length}`, 20, 90);
+        }
     }
     
     drawMinimap() {
+        if (!this.minimapCtx) return;
+        
         const mapWidth = this.minimapCanvas.width;
         const mapHeight = this.minimapCanvas.height;
         const scaleX = mapWidth / this.canvas.width;
@@ -225,5 +266,5 @@ class Game {
 
 // Start the game when the page loads
 window.addEventListener('load', () => {
-    new Game();
+    window.game = new Game();
 });

@@ -18,6 +18,8 @@ class Player {
         
         this.weapon = new Weapon();
         this.credits = 0;
+        
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
     
     setTarget(x, y) {
@@ -30,11 +32,31 @@ class Player {
     }
     
     update(keys, canvasWidth, canvasHeight) {
-        // Keyboard movement
-        if (keys['w'] || keys['ArrowUp']) this.y -= this.speed;
-        if (keys['s'] || keys['ArrowDown']) this.y += this.speed;
-        if (keys['a'] || keys['ArrowLeft']) this.x -= this.speed;
-        if (keys['d'] || keys['ArrowRight']) this.x += this.speed;
+        let moveX = 0;
+        let moveY = 0;
+        
+        if (this.isMobile && window.touchInput) {
+            // Mobile touch input
+            const touchInput = window.touchInput.getInput();
+            moveX = touchInput.moveX;
+            moveY = touchInput.moveY;
+        } else {
+            // Desktop keyboard input
+            if (keys['w'] || keys['ArrowUp']) moveY -= 1;
+            if (keys['s'] || keys['ArrowDown']) moveY += 1;
+            if (keys['a'] || keys['ArrowLeft']) moveX -= 1;
+            if (keys['d'] || keys['ArrowRight']) moveX += 1;
+        }
+        
+        // Normalize diagonal movement
+        const magnitude = Math.hypot(moveX, moveY);
+        if (magnitude > 0) {
+            moveX = (moveX / magnitude) * this.speed;
+            moveY = (moveY / magnitude) * this.speed;
+            
+            this.x += moveX;
+            this.y += moveY;
+        }
         
         // Boundary checking
         this.x = Math.max(this.radius, Math.min(canvasWidth - this.radius, this.x));
@@ -46,9 +68,13 @@ class Player {
         }
         
         // Update UI
-        document.getElementById('hp').textContent = Math.ceil(this.health);
-        document.getElementById('shield').textContent = Math.ceil(this.shield);
-        document.getElementById('credits').textContent = this.credits;
+        const hpElement = document.getElementById('hp') || document.getElementById('hp-desktop');
+        const shieldElement = document.getElementById('shield') || document.getElementById('shield-desktop');
+        const creditsElement = document.getElementById('credits');
+        
+        if (hpElement) hpElement.textContent = Math.ceil(this.health);
+        if (shieldElement) shieldElement.textContent = Math.ceil(this.shield);
+        if (creditsElement) creditsElement.textContent = this.credits;
     }
     
     shoot() {
