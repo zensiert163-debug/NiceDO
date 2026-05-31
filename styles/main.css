@@ -1,0 +1,77 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0e27;
+    color: #00ff88;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+}
+
+#game-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+#gameCanvas {
+    flex: 1;
+    background: radial-gradient(circle, #1a1f3a 0%, #0a0e27 100%);
+    display: block;
+}
+
+#ui-panel {
+    width: 250px;
+    background: rgba(10, 14, 39, 0.9);
+    border-left: 2px solid #00ff88;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: inset 2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#player-stats {
+    margin-bottom: 30px;
+    padding: 15px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid #00ff88;
+    border-radius: 5px;
+}
+
+#player-stats h3 {
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px #00ff88;
+}
+
+#player-stats p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+#minimapCanvas {
+    width: 100%;
+    height: 150px;
+    background: #0a0e27;
+    border: 1px solid #00ff88;
+    border-radius: 5px;
+}
+
+/* Scrollbar Styling */
+#ui-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+#ui-panel::-webkit-scrollbar-track {
+    background: rgba(0, 255, 136, 0.1);
+}
+
+#ui-panel::-webkit-scrollbar-thumb {
+    background: #00ff88;
+    border-radius: 4px;
+}
+
+#ui-panel::-webkit-scrollbar-thumb:hover {
+    background: #00dd77;
+}

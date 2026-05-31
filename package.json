@@ -1,0 +1,21 @@
+{
+  "name": "nicedo",
+  "version": "0.1.0",
+  "description": "A DarkOrbit-style space MMO game",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server . -p 8080",
+    "dev": "http-server . -p 8080 -c-1"
+  },
+  "keywords": [
+    "game",
+    "mmo",
+    "space",
+    "darkOrbit"
+  ],
+  "author": "zensiert163-debug",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
